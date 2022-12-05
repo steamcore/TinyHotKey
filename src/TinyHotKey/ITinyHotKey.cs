@@ -3,13 +3,13 @@ namespace TinyHotKey;
 public interface ITinyHotKey
 {
 	/// <summary>
-	/// Register a callback to be invoke when a keyboard combination is detected.
-	///
+	/// <para>Register a callback to be invoke when a keyboard combination is detected.</para>
+	/// <para>
 	/// Since only one application at a time may listen to a certain keyboard combination on Windows
 	/// you need to check the result to see if the registration was sucessful, if it was the registration
 	/// should be disposed when the registration is no longer needed.
-	///
-	/// Multiple registrations for the same keyboard combination with the same instance is ok.
+	/// </para>
+	/// <para>Multiple registrations for the same keyboard combination with the same instance is ok.</para>
 	/// </summary>
 	/// <param name="modifiers">Modifier keys, eg. Modifier.Ctrl | Modifier.Alt or Modifier.None</param>
 	/// <param name="key">Key to detect, eg. Key.C or Key.MediaPlayPause</param>
@@ -21,12 +21,12 @@ public interface ITinyHotKey
 public static class TinyHotKeyExtensions
 {
 	/// <summary>
-	/// Register a callback to be invoke when a keyboard combination is detected.
-	///
+	/// <para>Register a callback to be invoke when a keyboard combination is detected.</para>
+	/// <para>
 	/// Since only one application at a time may listen to a certain keyboard combination on Windows
 	/// this method will throw an error if the registration was not a success.
-	///
-	/// Multiple registrations for the same keyboard combination with the same instance is ok.
+	/// </para>
+	/// <para>Multiple registrations for the same keyboard combination with the same instance is ok.</para>
 	/// </summary>
 	/// <param name="tinyHotKey">A TinyHotKey instance</param>
 	/// <param name="modifiers">Modifier keys, eg. Modifier.Ctrl | Modifier.Alt or Modifier.None</param>

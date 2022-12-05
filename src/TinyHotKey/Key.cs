@@ -1,6 +1,13 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace TinyHotKey;
 
 [Flags]
+[SuppressMessage("Design", "CA1069:Enums values should not be duplicated", Justification = "It's a clone of the Windows Forms Keys class")]
+[SuppressMessage("Roslynator", "RCS1157:Composite enum value contains undefined flag.", Justification = "It's a clone of the Windows Forms Keys class")]
+[SuppressMessage("Roslynator", "RCS1154:Sort enum members.", Justification = "It's a clone of the Windows Forms Keys class")]
+[SuppressMessage("Roslynator", "RCS1191:Declare enum value as combination of names.", Justification = "It's a clone of the Windows Forms Keys class")]
+[SuppressMessage("Roslynator", "RCS1234:Duplicate enum value.", Justification = "It's a clone of the Windows Forms Keys class")]
 public enum Key
 {
 	KeyCode = 0xFFFF,

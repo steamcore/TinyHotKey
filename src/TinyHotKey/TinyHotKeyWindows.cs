@@ -1,4 +1,7 @@
 using System.Diagnostics;
+#if NET7_0_OR_GREATER
+using System.Diagnostics.CodeAnalysis;
+#endif
 using System.Runtime.InteropServices;
 #if NET
 using System.Runtime.Versioning;
@@ -429,6 +432,7 @@ internal static partial class NativeMethods
 	public static partial void PostQuitMessage(int nExitCode);
 
 	[DllImport("user32.dll", SetLastError = true)]
+	[SuppressMessage("Interoperability", "SYSLIB1054:Use 'LibraryImportAttribute' instead of 'DllImportAttribute' to generate P/Invoke marshalling code at compile time", Justification = "Marshalling of WNDCLASSEX is not supported by source generated P/Invoke.")]
 	public static extern ushort RegisterClassEx(in WNDCLASSEX lpwcx);
 
 	[LibraryImport("user32.dll", SetLastError = true)]
@@ -450,7 +454,7 @@ internal static partial class NativeMethods
 	[return: MarshalAs(UnmanagedType.Bool)]
 	public static partial bool UnregisterHotKey(IntPtr hWnd, int id);
 #else
-	[DllImport("user32.dll", SetLastError = true)]
+	[DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
 	public static extern IntPtr CreateWindowEx(
 		uint dwExStyle,
 		ushort lpClassName,

@@ -10,7 +10,7 @@ public interface ITinyHotKeyRegistration : IDisposable
 
 public sealed class FailedTinyHotKeyRegistration : ITinyHotKeyRegistration
 {
-	public static ITinyHotKeyRegistration Instance = new FailedTinyHotKeyRegistration();
+	public static ITinyHotKeyRegistration Instance { get; } = new FailedTinyHotKeyRegistration();
 
 	public bool IsRegistered { get; }
 
