@@ -1,0 +1,11 @@
+build/
+[Bb]in/
+[Oo]bj/
+.cr/
+.vs/
+*.Artifacts/
+
+*.lock.json
+*.nupkg
+*.suo
+*.user
