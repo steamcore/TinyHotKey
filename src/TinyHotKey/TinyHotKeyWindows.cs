@@ -27,6 +27,7 @@ internal sealed partial class TinyHotKeyWindows : ITinyHotKey, IDisposable
 	private readonly ILogger? logger;
 	private readonly object registrationLock = new();
 	private readonly List<TinyHotKeyRegistration> registrations = new();
+	private readonly WndProc wndProcDelegate;
 
 	private ushort atom;
 	private nint hWnd;
@@ -43,6 +44,9 @@ internal sealed partial class TinyHotKeyWindows : ITinyHotKey, IDisposable
 	public TinyHotKeyWindows(ILogger? logger)
 	{
 		this.logger = logger;
+
+		// Create a delegate to MainWndProc that will not get garbage collected
+		wndProcDelegate = MainWndProc;
 
 		// Start the message loop in its own dedicated thread, this is where all the magic happens
 		Task.Run(MessageLoop);
@@ -288,7 +292,7 @@ internal sealed partial class TinyHotKeyWindows : ITinyHotKey, IDisposable
 		{
 			cbSize = Marshal.SizeOf<WNDCLASSEX>(),
 			hInstance = hInstance,
-			lpfnWndProc = Marshal.GetFunctionPointerForDelegate<WndProc>(MainWndProc),
+			lpfnWndProc = Marshal.GetFunctionPointerForDelegate(wndProcDelegate),
 			lpszClassName = className
 		};
 
