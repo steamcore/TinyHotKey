@@ -287,63 +287,85 @@ internal sealed partial class TinyHotKeyWindows : ITinyHotKey, IDisposable
 		// Get the process instance handle
 		var hInstance = Process.GetCurrentProcess().Handle;
 
-		// Create and register a Window class with a callback to the MainWndProc
-		var wndClass = new WNDCLASSEX
+		try
 		{
-			cbSize = Marshal.SizeOf<WNDCLASSEX>(),
-			hInstance = hInstance,
-			lpfnWndProc = Marshal.GetFunctionPointerForDelegate(wndProcDelegate),
-			lpszClassName = className
-		};
+			// Create and register a Window class with a callback to the MainWndProc
+			var wndClass = new WNDCLASSEX
+			{
+				cbSize = Marshal.SizeOf<WNDCLASSEX>(),
+				hInstance = hInstance,
+				lpfnWndProc = Marshal.GetFunctionPointerForDelegate(wndProcDelegate),
+				lpszClassName = className
+			};
 
-		atom = NativeMethods.RegisterClassEx(wndClass);
+			atom = NativeMethods.RegisterClassEx(wndClass);
 
-		if (atom == 0)
-		{
-			lastError = Marshal.GetLastWin32Error();
-			messageLoopDone.Set();
-			return;
+			if (atom == 0)
+			{
+				lastError = Marshal.GetLastWin32Error();
+				messageLoopDone.Set();
+				return;
+			}
+
+			// Create a hidden Window use the registered Window class
+			hWnd = NativeMethods.CreateWindowEx(
+				0,
+				atom,
+				"TinyHotKey",
+				0,
+				NativeConstants.CW_USEDEFAULT,
+				NativeConstants.CW_USEDEFAULT,
+				NativeConstants.CW_USEDEFAULT,
+				NativeConstants.CW_USEDEFAULT,
+				IntPtr.Zero,
+				IntPtr.Zero,
+				hInstance,
+				IntPtr.Zero
+			);
+
+			if (hWnd == IntPtr.Zero)
+			{
+				lastError = Marshal.GetLastWin32Error();
+				NativeMethods.UnregisterClass(atom, hInstance);
+				messageLoopDone.Set();
+				return;
+			}
 		}
-
-		// Create a hidden Window use the registered Window class
-		hWnd = NativeMethods.CreateWindowEx(
-			0,
-			atom,
-			"TinyHotKey",
-			0,
-			NativeConstants.CW_USEDEFAULT,
-			NativeConstants.CW_USEDEFAULT,
-			NativeConstants.CW_USEDEFAULT,
-			NativeConstants.CW_USEDEFAULT,
-			IntPtr.Zero,
-			IntPtr.Zero,
-			hInstance,
-			IntPtr.Zero
-		);
-
-		if (hWnd == IntPtr.Zero)
+		catch (Exception ex)
 		{
-			lastError = Marshal.GetLastWin32Error();
-			NativeMethods.UnregisterClass(atom, hInstance);
-			messageLoopDone.Set();
+			if (logger is not null)
+			{
+				LogFatalMessageLoopError(logger, ex);
+			}
+
 			return;
 		}
 
 		// Signal to the constructor that we are ready and starting the message loop
 		messageLoopDone.Set();
 
-		// Process messages until WM_CLOSE causes MainWndProc to call PostQuitMessage
-		while (NativeMethods.GetMessage(out var msg, hWnd, 0, 0) != 0)
+		try
 		{
-			NativeMethods.TranslateMessage(msg);
-			NativeMethods.DispatchMessage(msg);
+			// Process messages until WM_CLOSE causes MainWndProc to call PostQuitMessage
+			while (NativeMethods.GetMessage(out var msg, hWnd, 0, 0) != 0)
+			{
+				NativeMethods.TranslateMessage(msg);
+				NativeMethods.DispatchMessage(msg);
+			}
+
+			// The window is probably already destroyed but calling DestroyWindow just to be sure doesn't hurt
+			NativeMethods.DestroyWindow(hWnd);
+
+			// Unregister the Window class since we don't need it any more
+			NativeMethods.UnregisterClass(atom, hInstance);
 		}
-
-		// The window is probably already destroyed but calling DestroyWindow just to be sure doesn't hurt
-		NativeMethods.DestroyWindow(hWnd);
-
-		// Unregister the Window class since we don't need it any more
-		NativeMethods.UnregisterClass(atom, hInstance);
+		catch (Exception ex)
+		{
+			if (logger is not null)
+			{
+				LogFatalMessageLoopError(logger, ex);
+			}
+		}
 
 		// Signal to the Dispose method that we are done
 		messageLoopDone.Set();
@@ -385,6 +407,9 @@ internal sealed partial class TinyHotKeyWindows : ITinyHotKey, IDisposable
 
 	[LoggerMessage(6, LogLevel.Information, "Hotkey detected {modifiers} {key}")]
 	private static partial void LogHotkeyDetected(ILogger logger, Modifier modifiers, Key key);
+
+	[LoggerMessage(7, LogLevel.Error, "Fatal message loop error")]
+	private static partial void LogFatalMessageLoopError(ILogger logger, Exception ex);
 }
 
 internal static class NativeConstants
