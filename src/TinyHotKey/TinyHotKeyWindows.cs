@@ -352,9 +352,6 @@ internal sealed partial class TinyHotKeyWindows : ITinyHotKey, IDisposable
 				NativeMethods.TranslateMessage(msg);
 				NativeMethods.DispatchMessage(msg);
 			}
-
-			// Unregister the Window class since we don't need it any more
-			NativeMethods.UnregisterClass(atom, hInstance);
 		}
 		catch (Exception ex)
 		{
@@ -363,9 +360,14 @@ internal sealed partial class TinyHotKeyWindows : ITinyHotKey, IDisposable
 				LogFatalMessageLoopError(logger, ex);
 			}
 		}
+		finally
+		{
+			// Unregister the Window class since we don't need it any more
+			NativeMethods.UnregisterClass(atom, hInstance);
 
-		// Signal to the Dispose method that we are done
-		messageLoopDone.Set();
+			// Signal to the Dispose method that we are done
+			messageLoopDone.Set();
+		}
 	}
 
 	/// <summary>
