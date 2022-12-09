@@ -346,9 +346,17 @@ internal sealed partial class TinyHotKeyWindows : ITinyHotKey, IDisposable
 
 		try
 		{
+			var msg = (uint)0;
+			var msgResult = (sbyte)1;
+
 			// Process messages until WM_CLOSE causes MainWndProc to call PostQuitMessage
-			while (NativeMethods.GetMessage(out var msg, hWnd, 0, 0) != 0)
+			while ((msgResult = NativeMethods.GetMessage(out msg, hWnd, 0, 0)) != 0)
 			{
+				if (msgResult < 0)
+				{
+					throw new InvalidOperationException($"GetMessage returned {msgResult}, last error was {Marshal.GetLastWin32Error()}");
+				}
+
 				NativeMethods.TranslateMessage(msg);
 				NativeMethods.DispatchMessage(msg);
 			}
@@ -449,7 +457,7 @@ internal static partial class NativeMethods
 	[LibraryImport("user32.dll", EntryPoint = "DispatchMessageW")]
 	public static partial IntPtr DispatchMessage(in uint lpmsg);
 
-	[LibraryImport("user32.dll", EntryPoint = "GetMessageW")]
+	[LibraryImport("user32.dll", EntryPoint = "GetMessageW", SetLastError = true)]
 	public static partial sbyte GetMessage(out uint lpMsg, IntPtr hWnd, uint wMsgFilterMin, uint wMsgFilterMax);
 
 	[LibraryImport("user32.dll")]
@@ -499,7 +507,7 @@ internal static partial class NativeMethods
 	[DllImport("user32.dll")]
 	public static extern IntPtr DispatchMessage(in uint lpmsg);
 
-	[DllImport("user32.dll")]
+	[DllImport("user32.dll", SetLastError = true)]
 	public static extern sbyte GetMessage(out uint lpMsg, IntPtr hWnd, uint wMsgFilterMin, uint wMsgFilterMax);
 
 	[DllImport("user32.dll")]
