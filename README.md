@@ -14,7 +14,7 @@ to what you tell it to listen to.
 ```csharp
 using var tinyHotKey = new TinyHotKeyInstance();
 
-using var binding = tinyHotKey.RegisterHotKey(Modifier.Control | Modifier.Alt, Key.D, () =>
+using var registration = tinyHotKey.RegisterHotKey(Modifier.Control | Modifier.Alt, Key.D, () =>
 {
 	Console.WriteLine("Ctrl+Alt+D detected");
 
@@ -29,7 +29,7 @@ using var binding = tinyHotKey.RegisterHotKey(Modifier.Control | Modifier.Alt, K
 services.AddTinyHotKey();
 
 // Later in some service with a dependency on ITinyHotKey tinyHotKey
-tinyHotKey.RegisterHotKey(Modifier.Control | Modifier.Alt, Key.D, () =>
+using var registration = tinyHotKey.RegisterHotKey(Modifier.Control | Modifier.Alt, Key.D, () =>
 {
 	Console.WriteLine("Ctrl+Alt+D detected");
 

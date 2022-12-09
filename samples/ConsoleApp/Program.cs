@@ -8,14 +8,14 @@ public class Program
 	{
 		using var tinyHotKey = new TinyHotKeyInstance();
 
-		using var binding = tinyHotKey.RegisterHotKey(Modifier.Control | Modifier.Alt, Key.D, () =>
+		using var registration = tinyHotKey.RegisterHotKey(Modifier.Control | Modifier.Alt, Key.D, () =>
 		{
 			Console.WriteLine("Ctrl+Alt+D detected");
 
 			return Task.CompletedTask;
 		});
 
-		if (!binding.IsRegistered)
+		if (!registration.IsRegistered)
 		{
 			Console.WriteLine("Couldn't register hotkey Ctrl+Alt+D, maybe it's already taken by something else?");
 
