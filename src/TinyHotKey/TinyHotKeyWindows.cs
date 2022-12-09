@@ -353,9 +353,6 @@ internal sealed partial class TinyHotKeyWindows : ITinyHotKey, IDisposable
 				NativeMethods.DispatchMessage(msg);
 			}
 
-			// The window is probably already destroyed but calling DestroyWindow just to be sure doesn't hurt
-			NativeMethods.DestroyWindow(hWnd);
-
 			// Unregister the Window class since we don't need it any more
 			NativeMethods.UnregisterClass(atom, hInstance);
 		}
@@ -447,10 +444,6 @@ internal static partial class NativeMethods
 	[LibraryImport("user32.dll", EntryPoint = "DefWindowProcW")]
 	public static partial nint DefWindowProc(IntPtr hWnd, uint uMsg, nuint wParam, nint lParam);
 
-	[LibraryImport("user32.dll", SetLastError = true)]
-	[return: MarshalAs(UnmanagedType.Bool)]
-	public static partial bool DestroyWindow(IntPtr hWnd);
-
 	[LibraryImport("user32.dll", EntryPoint = "DispatchMessageW")]
 	public static partial IntPtr DispatchMessage(in uint lpmsg);
 
@@ -500,9 +493,6 @@ internal static partial class NativeMethods
 
 	[DllImport("user32.dll")]
 	public static extern nint DefWindowProc(IntPtr hWnd, uint uMsg, nuint wParam, nint lParam);
-
-	[DllImport("user32.dll", SetLastError = true)]
-	public static extern bool DestroyWindow(IntPtr hWnd);
 
 	[DllImport("user32.dll")]
 	public static extern IntPtr DispatchMessage(in uint lpmsg);
