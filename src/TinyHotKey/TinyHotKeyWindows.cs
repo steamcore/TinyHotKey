@@ -35,6 +35,7 @@ internal sealed partial class TinyHotKeyWindows : ITinyHotKey, IDisposable
 
 	private bool disposed;
 	private nuint hotKeyId = 1_000;
+	private bool quitting;
 
 	public TinyHotKeyWindows()
 		: this(null)
@@ -95,7 +96,7 @@ internal sealed partial class TinyHotKeyWindows : ITinyHotKey, IDisposable
 		}
 
 		// Signal the window to close so the message loop will post the quit message and exit
-		NativeMethods.SendMessage(hWnd, NativeMessage.WM_CLOSE, 0, 0);
+		NativeMethods.PostMessage(hWnd, NativeMessage.WM_CLOSE, 0, 0);
 
 		// Wait for the message loop to signal that it is done before moving on
 		if (!messageLoopDone.WaitOne(TimeSpan.FromSeconds(5)))
@@ -239,10 +240,11 @@ internal sealed partial class TinyHotKeyWindows : ITinyHotKey, IDisposable
 					return 0;
 				}
 
-			case NativeMessage.WM_CLOSE:
+			case NativeMessage.WM_DESTROY:
 				{
-					// We have been asked to close, probably by the Dispose method, post a quit message to exit the message loop
+					// The Window has been destroyed, now we can post a quit message to exit the message loop
 					NativeMethods.PostQuitMessage(0);
+					quitting = true;
 					return 0;
 				}
 		}
@@ -354,6 +356,11 @@ internal sealed partial class TinyHotKeyWindows : ITinyHotKey, IDisposable
 			{
 				if (msgResult < 0)
 				{
+					if (quitting)
+					{
+						break;
+					}
+
 					throw new InvalidOperationException($"GetMessage returned {msgResult}, last error was {Marshal.GetLastWin32Error()}");
 				}
 
@@ -426,6 +433,7 @@ internal static class NativeConstants
 
 internal static class NativeMessage
 {
+	public const int WM_DESTROY = 0x0002;
 	public const int WM_CLOSE = 0x0010;
 	public const int WM_HOTKEY = 0x0312;
 	public const int WM_APP = 0x8000;
@@ -454,11 +462,18 @@ internal static partial class NativeMethods
 	[LibraryImport("user32.dll", EntryPoint = "DefWindowProcW")]
 	public static partial nint DefWindowProc(IntPtr hWnd, uint uMsg, nuint wParam, nint lParam);
 
+	[LibraryImport("user32.dll", SetLastError = true)]
+	[return: MarshalAs(UnmanagedType.Bool)]
+	public static partial bool DestroyWindow(IntPtr hWnd);
+
 	[LibraryImport("user32.dll", EntryPoint = "DispatchMessageW")]
 	public static partial IntPtr DispatchMessage(in uint lpmsg);
 
 	[LibraryImport("user32.dll", EntryPoint = "GetMessageW", SetLastError = true)]
 	public static partial sbyte GetMessage(out uint lpMsg, IntPtr hWnd, uint wMsgFilterMin, uint wMsgFilterMax);
+
+	[LibraryImport("user32.dll", EntryPoint = "PostMessageW")]
+	public static partial nint PostMessage(IntPtr hWnd, uint Msg, nuint wParam, nint lParam);
 
 	[LibraryImport("user32.dll")]
 	public static partial void PostQuitMessage(int nExitCode);
@@ -504,11 +519,17 @@ internal static partial class NativeMethods
 	[DllImport("user32.dll")]
 	public static extern nint DefWindowProc(IntPtr hWnd, uint uMsg, nuint wParam, nint lParam);
 
+	[DllImport("user32.dll", SetLastError = true)]
+	public static extern bool DestroyWindow(IntPtr hWnd);
+
 	[DllImport("user32.dll")]
 	public static extern IntPtr DispatchMessage(in uint lpmsg);
 
 	[DllImport("user32.dll", SetLastError = true)]
 	public static extern sbyte GetMessage(out uint lpMsg, IntPtr hWnd, uint wMsgFilterMin, uint wMsgFilterMax);
+
+	[DllImport("user32.dll")]
+	public static extern nint PostMessage(IntPtr hWnd, uint Msg, nuint wParam, nint lParam);
 
 	[DllImport("user32.dll")]
 	public static extern void PostQuitMessage(int nExitCode);
