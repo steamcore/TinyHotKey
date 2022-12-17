@@ -104,6 +104,8 @@ internal sealed partial class TinyHotKeyWindows : ITinyHotKey, IDisposable
 			throw new InvalidOperationException("Message loop failed to exit");
 		}
 
+		messageLoopDone.Dispose();
+
 		disposed = true;
 	}
 
@@ -444,6 +446,7 @@ internal static class NativeMessage
 internal static partial class NativeMethods
 {
 #if NET7_0_OR_GREATER
+	[DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
 	[LibraryImport("user32.dll", EntryPoint = "CreateWindowExW", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
 	public static partial IntPtr CreateWindowEx(
 	   uint dwExStyle,
@@ -459,48 +462,61 @@ internal static partial class NativeMethods
 	   IntPtr hInstance,
 	   IntPtr lpParam);
 
+	[DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
 	[LibraryImport("user32.dll", EntryPoint = "DefWindowProcW")]
 	public static partial nint DefWindowProc(IntPtr hWnd, uint uMsg, nuint wParam, nint lParam);
 
+	[DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
 	[LibraryImport("user32.dll", SetLastError = true)]
 	[return: MarshalAs(UnmanagedType.Bool)]
 	public static partial bool DestroyWindow(IntPtr hWnd);
 
+	[DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
 	[LibraryImport("user32.dll", EntryPoint = "DispatchMessageW")]
 	public static partial IntPtr DispatchMessage(in uint lpmsg);
 
+	[DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
 	[LibraryImport("user32.dll", EntryPoint = "GetMessageW", SetLastError = true)]
 	public static partial sbyte GetMessage(out uint lpMsg, IntPtr hWnd, uint wMsgFilterMin, uint wMsgFilterMax);
 
+	[DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
 	[LibraryImport("user32.dll", EntryPoint = "PostMessageW")]
 	public static partial nint PostMessage(IntPtr hWnd, uint Msg, nuint wParam, nint lParam);
 
+	[DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
 	[LibraryImport("user32.dll")]
 	public static partial void PostQuitMessage(int nExitCode);
 
+	[DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
 	[DllImport("user32.dll", SetLastError = true)]
 	[SuppressMessage("Interoperability", "SYSLIB1054:Use 'LibraryImportAttribute' instead of 'DllImportAttribute' to generate P/Invoke marshalling code at compile time", Justification = "Marshalling of WNDCLASSEX is not supported by source generated P/Invoke.")]
 	public static extern ushort RegisterClassEx(in WNDCLASSEX lpwcx);
 
+	[DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
 	[LibraryImport("user32.dll", SetLastError = true)]
 	[return: MarshalAs(UnmanagedType.Bool)]
 	public static partial bool RegisterHotKey(IntPtr hWnd, int id, uint fsModifiers, uint vk);
 
+	[DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
 	[LibraryImport("user32.dll", EntryPoint = "SendMessageW")]
 	public static partial nint SendMessage(IntPtr hWnd, uint Msg, nuint wParam, nint lParam);
 
+	[DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
 	[LibraryImport("user32.dll")]
 	[return: MarshalAs(UnmanagedType.Bool)]
 	public static partial bool TranslateMessage(in uint lpMsg);
 
+	[DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
 	[LibraryImport("user32.dll", EntryPoint = "UnregisterClassW", SetLastError = true)]
 	[return: MarshalAs(UnmanagedType.Bool)]
 	public static partial bool UnregisterClass(ushort lpClassName, IntPtr hInstance);
 
+	[DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
 	[LibraryImport("user32.dll", SetLastError = true)]
 	[return: MarshalAs(UnmanagedType.Bool)]
 	public static partial bool UnregisterHotKey(IntPtr hWnd, int id);
 #else
+	[DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
 	[DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
 	public static extern IntPtr CreateWindowEx(
 		uint dwExStyle,
@@ -516,39 +532,51 @@ internal static partial class NativeMethods
 		IntPtr hInstance,
 		IntPtr lpParam);
 
+	[DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
 	[DllImport("user32.dll")]
 	public static extern nint DefWindowProc(IntPtr hWnd, uint uMsg, nuint wParam, nint lParam);
 
+	[DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
 	[DllImport("user32.dll", SetLastError = true)]
 	public static extern bool DestroyWindow(IntPtr hWnd);
 
+	[DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
 	[DllImport("user32.dll")]
 	public static extern IntPtr DispatchMessage(in uint lpmsg);
 
+	[DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
 	[DllImport("user32.dll", SetLastError = true)]
 	public static extern sbyte GetMessage(out uint lpMsg, IntPtr hWnd, uint wMsgFilterMin, uint wMsgFilterMax);
 
+	[DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
 	[DllImport("user32.dll")]
 	public static extern nint PostMessage(IntPtr hWnd, uint Msg, nuint wParam, nint lParam);
 
+	[DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
 	[DllImport("user32.dll")]
 	public static extern void PostQuitMessage(int nExitCode);
 
+	[DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
 	[DllImport("user32.dll", SetLastError = true)]
 	public static extern ushort RegisterClassEx(in WNDCLASSEX lpwcx);
 
+	[DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
 	[DllImport("user32.dll", SetLastError = true)]
 	public static extern bool RegisterHotKey(IntPtr hWnd, int id, uint fsModifiers, uint vk);
 
+	[DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
 	[DllImport("user32.dll", CharSet = CharSet.Auto)]
 	public static extern nint SendMessage(IntPtr hWnd, uint Msg, nuint wParam, nint lParam);
 
+	[DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
 	[DllImport("user32.dll")]
 	public static extern bool TranslateMessage(in uint lpMsg);
 
+	[DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
 	[DllImport("user32.dll", SetLastError = true)]
 	public static extern bool UnregisterClass(ushort lpClassName, IntPtr hInstance);
 
+	[DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
 	[DllImport("user32.dll", SetLastError = true)]
 	public static extern bool UnregisterHotKey(IntPtr hWnd, int id);
 #endif

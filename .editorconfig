@@ -228,3 +228,7 @@ dotnet_diagnostic.RCS1192.severity = none
 
 # RCS1250: Use implicit/explicit object creation
 dotnet_diagnostic.RCS1250.severity = warning
+
+[Program.cs]
+# CA1052: Static holder types should be Static or NotInheritable
+dotnet_diagnostic.CA1052.severity = none
