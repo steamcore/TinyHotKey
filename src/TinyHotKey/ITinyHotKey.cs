@@ -36,6 +36,9 @@ public static class TinyHotKeyExtensions
 	/// <exception cref="InvalidOperationException">Thrown when the hotkey combination could not be registered.</exception>
 	public static ITinyHotKeyRegistration RegisterHotKeyOrThrow(this ITinyHotKey tinyHotKey, Modifier modifiers, Key key, Func<Task> callback)
 	{
+		if (tinyHotKey is null)
+			throw new ArgumentNullException(nameof(tinyHotKey));
+
 		var registration = tinyHotKey.RegisterHotKey(modifiers, key, callback);
 
 		if (!registration.IsRegistered)
