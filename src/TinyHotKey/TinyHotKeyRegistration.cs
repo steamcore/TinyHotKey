@@ -23,27 +23,22 @@ public sealed class FailedTinyHotKeyRegistration : ITinyHotKeyRegistration
 	}
 }
 
-public sealed class TinyHotKeyRegistration : ITinyHotKeyRegistration
+public sealed class TinyHotKeyRegistration(
+	nuint id,
+	Modifier modifiers,
+	Key key,
+	Func<Task> callback,
+	Action<TinyHotKeyRegistration> unregister
+)
+	: ITinyHotKeyRegistration
 {
-	public nuint Id { get; }
-	public Modifier Modifiers { get; }
-	public Key Key { get; }
-	public Func<Task> Callback { get; }
+	public nuint Id { get; } = id;
+	public Modifier Modifiers { get; } = modifiers;
+	public Key Key { get; } = key;
+	public Func<Task> Callback { get; } = callback;
 	public bool IsRegistered { get; } = true;
 
-	private readonly Action<TinyHotKeyRegistration> unregister;
-
 	private bool disposed;
-
-	public TinyHotKeyRegistration(nuint id, Modifier modifiers, Key key, Func<Task> callback, Action<TinyHotKeyRegistration> unregister)
-	{
-		Id = id;
-		Modifiers = modifiers;
-		Key = key;
-		Callback = callback;
-
-		this.unregister = unregister;
-	}
 
 	public void Dispose()
 	{

@@ -1,9 +1,11 @@
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.Logging;
 
 namespace TinyHotKey;
 
 public sealed class TinyHotKeyInstance : ITinyHotKey, IDisposable
 {
+	[SuppressMessage("Performance", "CA1859:Use concrete types when possible for improved performance", Justification = "This is intentionally using the interface")]
 	private readonly ITinyHotKey platformInstance;
 
 	private bool disposed;

@@ -26,7 +26,7 @@ internal sealed partial class TinyHotKeyWindows : ITinyHotKey, IDisposable
 	private readonly AutoResetEvent messageLoopDone = new(false);
 	private readonly ILogger? logger;
 	private readonly object registrationLock = new();
-	private readonly List<TinyHotKeyRegistration> registrations = new();
+	private readonly List<TinyHotKeyRegistration> registrations = [];
 	private readonly WndProc wndProcDelegate;
 
 	private ushort atom;
@@ -86,7 +86,7 @@ internal sealed partial class TinyHotKeyWindows : ITinyHotKey, IDisposable
 
 		lock (registrationLock)
 		{
-			registrationsToDispose = registrations.ToArray();
+			registrationsToDispose = [.. registrations];
 		}
 
 		// Dispose any left over registrations
