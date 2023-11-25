@@ -1,6 +1,4 @@
-build/
-[Bb]in/
-[Oo]bj/
+artifacts/
 .cr/
 .vs/
 *.Artifacts/
