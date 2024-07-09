@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <GlobalPackageReference Include="Roslynator.Analyzers" Version="4.12.3" />
+    <GlobalPackageReference Include="Roslynator.Analyzers" Version="4.12.4" />
   </ItemGroup>
 
 </Project>
