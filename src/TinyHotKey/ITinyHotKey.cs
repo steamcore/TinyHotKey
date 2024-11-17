@@ -40,7 +40,9 @@ public static class TinyHotKeyExtensions
 		ArgumentNullException.ThrowIfNull(tinyHotKey);
 #else
 		if (tinyHotKey is null)
+		{
 			throw new ArgumentNullException(nameof(tinyHotKey));
+		}
 #endif
 
 		var registration = tinyHotKey.RegisterHotKey(modifiers, key, callback);
