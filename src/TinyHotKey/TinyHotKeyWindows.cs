@@ -1,5 +1,5 @@
 using System.Diagnostics;
-#if NET7_0_OR_GREATER
+#if NET
 using System.Diagnostics.CodeAnalysis;
 #endif
 using System.Runtime.InteropServices;
@@ -445,7 +445,7 @@ internal static class NativeMessage
 
 internal static partial class NativeMethods
 {
-#if NET7_0_OR_GREATER
+#if NET
 	[DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
 	[LibraryImport("user32.dll", EntryPoint = "CreateWindowExW", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
 	public static partial IntPtr CreateWindowEx(
