@@ -453,18 +453,19 @@ internal static partial class NativeMethods
 	[DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
 	[LibraryImport("user32.dll", EntryPoint = "CreateWindowExW", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
 	public static partial IntPtr CreateWindowEx(
-	   uint dwExStyle,
-	   ushort lpClassName,
-	   string lpWindowName,
-	   uint dwStyle,
-	   int x,
-	   int y,
-	   int nWidth,
-	   int nHeight,
-	   IntPtr hWndParent,
-	   IntPtr hMenu,
-	   IntPtr hInstance,
-	   IntPtr lpParam);
+		uint dwExStyle,
+		ushort lpClassName,
+		string lpWindowName,
+		uint dwStyle,
+		int x,
+		int y,
+		int nWidth,
+		int nHeight,
+		IntPtr hWndParent,
+		IntPtr hMenu,
+		IntPtr hInstance,
+		IntPtr lpParam
+	);
 
 	[DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
 	[LibraryImport("user32.dll", EntryPoint = "DefWindowProcW")]
