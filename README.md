@@ -3,11 +3,9 @@
 [![NuGet](https://img.shields.io/nuget/v/TinyHotKey.svg?maxAge=259200)](https://www.nuget.org/packages/TinyHotKey/)
 ![Build](https://github.com/steamcore/TinyHotKey/workflows/Build/badge.svg)
 
-Windows HotKey handler that does not listen to all keyboard input and has no dependency on
-Windows Forms or WPF.
-
-This is using `RegisterHotKey` on the Win32 API directly, no global hooks, it only listens
-to what you tell it to listen to.
+TinyHotKey is a Windows HotKey handler with no dependency on Windows Forms or WPF that only listen
+to specified key combinations. It uses `RegisterHotKey` from the Win32 API directly on a dedicated
+thread using a hidden window, avoiding global hooks.
 
 ## Simple example
 
@@ -25,39 +23,28 @@ using var registration = tinyHotKey.RegisterHotKey(Modifier.Control | Modifier.A
 ## Example using dependency injection
 
 ```csharp
-// Add it to your DI container using this overload to get logging support as well
+// Add TinyHotKey to your DI container with logging support
 services.AddTinyHotKey();
 
-// Later in some service with a dependency on ITinyHotKey tinyHotKey
+// In a service with a dependency on ITinyHotKey
 using var registration = tinyHotKey.RegisterHotKey(Modifier.Control | Modifier.Alt, Key.D, () =>
 {
-	Console.WriteLine("Ctrl+Alt+D detected");
+    Console.WriteLine("Ctrl+Alt+D detected");
 
-	return Task.CompletedTask;
+    return Task.CompletedTask;
 });
 ```
 
-## Why? There are hundreds of other similar projects
+## Why TinyHotKey?
+Unlike other projects TinyHotKey has no dependency on Windows Form or WPF and does not use global
+hooks, which makes it possible to avoid keylogger-like behavior and also support trimming and AOT.
 
-Actually, no.
-
-I needed trimmable and AOT-compatible hotkey detection and I wasn't able to find any other
-projects that do this with no dependency on Windows Forms or WPF which is important because
-those UI frameworks are not even remotely compatible with either trimming or AOT compilation.
-
-There are other projects that use global keyboard hooks instead but they listen to every single
-key press, just like a keylogger, which is something that I don't like.
-
+It is possible to use TinyHotKey in alternate UI frameworks such as Avalonia or even in console
+applications.
 
 ## How it works
-
-Windows hotkey detection work by detecting keyboard combinations for you and posts messages
-to your Window. That sounds simple enough but that means first you must have a Window and
-everything must be done on the UI thread.
-
-So what if you don't have a Window? This works in console apps too, right?
-
-There is no way around having a Window so what TinyHotKey does is create a hidden Window
-on a dedicated thread using more Win32 calls that handles all hotkey interaction and calls
-callbacks on a new task off the "UI" thread. There are other projects that do exactly this
-but none that I was able to find that does all this without parts of Windows Forms or WPF.
+The Windows hotkey mechanism works by detecting keyboard combinations and posting messages to a
+Window. TinyHotKey creates a hidden Window on a dedicated thread using Win32 calls, handling
+all hotkey interactions and invoking callbacks on a new task off the "UI" thread. This approach
+allows it to work in any kind of application running on Windows without relying on Windows Forms
+or WPF which are not trimming or AOT compatible.
