@@ -54,7 +54,7 @@ internal sealed partial class TinyHotKeyWindows : ITinyHotKey, IDisposable
 		wndProcDelegate = MainWndProc;
 
 		// Start the message loop in its own dedicated thread, this is where all the magic happens
-		Task.Run(MessageLoop);
+		_ = Task.Run(MessageLoop);
 
 		// Wait for the message loop to signal that it is ready, if the signal does not happen we can't continue
 		if (!messageLoopDone.WaitOne(TimeSpan.FromSeconds(5)))
@@ -228,7 +228,7 @@ internal sealed partial class TinyHotKeyWindows : ITinyHotKey, IDisposable
 				{
 					var (modifiers, key) = ReadHotKeyParam(lParam);
 
-					Task.Run(() => OnHotKeyDetected(modifiers, key));
+					_ = Task.Run(() => OnHotKeyDetectedAsync(modifiers, key));
 
 					return 0;
 				}
@@ -258,7 +258,7 @@ internal sealed partial class TinyHotKeyWindows : ITinyHotKey, IDisposable
 		return NativeMethods.DefWindowProc(hWnd, msg, wParam, lParam);
 	}
 
-	private async Task OnHotKeyDetected(Modifier modifiers, Key key)
+	private async Task OnHotKeyDetectedAsync(Modifier modifiers, Key key)
 	{
 		if (logger is not null)
 		{
@@ -269,9 +269,7 @@ internal sealed partial class TinyHotKeyWindows : ITinyHotKey, IDisposable
 
 		lock (registrationLock)
 		{
-			registrationsToInvoke = registrations
-				.Where(r => r.Modifiers == modifiers && r.Key == key)
-				.ToArray();
+			registrationsToInvoke = [.. registrations.Where(r => r.Modifiers == modifiers && r.Key == key)];
 		}
 
 		foreach (var registration in registrationsToInvoke)
