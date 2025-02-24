@@ -5,13 +5,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.0" />
-    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.2" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.2" />
   </ItemGroup>
 
   <ItemGroup>
-    <GlobalPackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.12.19" />
-    <GlobalPackageReference Include="Roslynator.Analyzers" Version="4.12.9" />
+    <GlobalPackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.13.2" />
+    <GlobalPackageReference Include="Roslynator.Analyzers" Version="4.13.1" />
   </ItemGroup>
 
 </Project>
