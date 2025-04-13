@@ -1,0 +1,16 @@
+<Solution>
+  <Folder Name="/config/">
+    <File Path=".editorconfig" />
+    <File Path=".gitignore" />
+    <File Path="global.json" />
+  </Folder>
+  <Folder Name="/samples/">
+    <File Path="samples/Directory.Build.props" />
+    <Project Path="samples/ConsoleApp/ConsoleApp.csproj" />
+  </Folder>
+  <Folder Name="/src/">
+    <File Path="src/Directory.Build.props" />
+    <File Path="src/Directory.Packages.props" />
+    <Project Path="src/TinyHotKey/TinyHotKey.csproj" />
+  </Folder>
+</Solution>
