@@ -17,12 +17,10 @@ public sealed class TinyHotKeyInstance : ITinyHotKey, IDisposable
 
 	public TinyHotKeyInstance(ILoggerFactory? loggerFactory)
 	{
-#if NET
 		if (!OperatingSystem.IsWindows())
 		{
 			throw new PlatformNotSupportedException("Operating system not supported");
 		}
-#endif
 
 		platformInstance = new TinyHotKeyWindows(loggerFactory?.CreateLogger("TinyHotKey"));
 	}

@@ -3,9 +3,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 #endif
 using System.Runtime.InteropServices;
-#if NET
 using System.Runtime.Versioning;
-#endif
 using Microsoft.Extensions.Logging;
 
 namespace TinyHotKey;
@@ -17,19 +15,13 @@ public delegate nint WndProc(IntPtr hWnd, uint msg, nuint wParam, nint lParam);
 /// which only works thanks to a hidden Window and a custom message loop on a
 /// dedicated thread.
 /// </summary>
-#if NET
 [SupportedOSPlatform("windows")]
-#endif
 internal sealed partial class TinyHotKeyWindows : ITinyHotKey, IDisposable
 {
 	private readonly string className = Guid.NewGuid().ToString("n");
 	private readonly AutoResetEvent messageLoopDone = new(false);
 	private readonly ILogger? logger;
-#if NET9_0_OR_GREATER
 	private readonly Lock registrationLock = new();
-#else
-	private readonly object registrationLock = new();
-#endif
 	private readonly List<TinyHotKeyRegistration> registrations = [];
 	private readonly WndProc wndProcDelegate;
 
